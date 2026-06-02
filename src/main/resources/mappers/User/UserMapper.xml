@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.nighttrip.user.mapper.UserMapper">
+
+    <select id="findByEmail" resultType="com.ssafy.nighttrip.user.domain.User">
+        SELECT
+        user_id,
+        email,
+        password,
+        nickname,
+        profile_image_url,
+        role,
+        status,
+        provider,
+        created_at,
+        updated_at,
+        deleted_at
+        FROM users
+        WHERE email = #{email}
+        AND deleted_at IS NULL
+    </select>
+
+    <select id="findById" resultType="com.ssafy.nighttrip.user.domain.User">
+        SELECT
+        user_id,
+        email,
+        password,
+        nickname,
+        profile_image_url,
+        role,
+        status,
+        provider,
+        created_at,
+        updated_at,
+        deleted_at
+        FROM users
+        WHERE user_id = #{userId}
+        AND deleted_at IS NULL
+    </select>
+
+</mapper>
