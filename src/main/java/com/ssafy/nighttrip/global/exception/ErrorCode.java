@@ -18,9 +18,15 @@ public enum ErrorCode {
     INVALID_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "AUTH_005", "올바르지 않은 토큰 타입입니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_006", "이메일 또는 비밀번호가 올바르지 않습니다."),
     USER_INACTIVE(HttpStatus.FORBIDDEN, "AUTH_007", "활성화되지 않은 사용자입니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_008", "Refresh Token이 존재하지 않습니다."),
+    REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH_009", "Refresh Token이 일치하지 않습니다."),
 
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "존재하지 않는 사용자입니다."),
+    PASSWORD_NOT_MATCHED(HttpStatus.BAD_REQUEST, "USER_002", "입력하신 비밀번호와 현재 비밀번호가 일치하지 않습니다."),
+
+    // City
+    CITY_NOT_FOUND(HttpStatus.NOT_FOUND, "CITY_001", "존재하지 않는 도시입니다."),
 
     // Place
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "PLACE_001", "존재하지 않는 장소입니다."),

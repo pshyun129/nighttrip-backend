@@ -41,4 +41,32 @@
         AND deleted_at IS NULL
     </select>
 
+
+    <update id="updateMyInfo">
+        UPDATE users
+        SET
+            nickname = #{nickname}
+        WHERE user_id = #{userId}
+
+    </update>
+
+
+    <delete id="deleteMyCourse">
+        DELETE FROM course
+        WHERE user_id = #{userId};
+    </delete>
+
+    <delete id="deleteMyInfo">
+        DELETE FROM users
+        WHERE user_id = #{userId};
+    </delete>
+
+    <update id="updateMyPassword">
+        UPDATE users
+        SET
+            password = #{password}
+        WHERE user_id = #{userId}
+
+    </update>
+
 </mapper>

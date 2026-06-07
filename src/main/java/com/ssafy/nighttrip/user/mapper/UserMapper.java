@@ -10,4 +10,21 @@ public interface UserMapper {
     User findByEmail(@Param("email") String email);
 
     User findById(@Param("userId") Long userId);
+
+    void updateMyInfo(
+            @Param("userId") Long userId,
+            @Param("nickname") String nickname
+    );
+
+    void deleteMyCourse(@Param("userId") Long userId);
+
+    int deleteMyInfo(@Param("userId") Long userId);
+
+    void updateMyPassword(
+            @Param("userId") Long userId,
+            @Param("password") String password
+    );
+
+
+
 }

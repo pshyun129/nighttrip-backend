@@ -14,6 +14,7 @@ public class RefreshTokenService {
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    // 리프래시 토큰 저장
     public void saveRefreshToken(Long userId, String refreshToken, long expirationMillis) {
         String key = getKey(userId);
 
@@ -27,6 +28,12 @@ public class RefreshTokenService {
 
     public String getRefreshToken(Long userId) {
         return stringRedisTemplate.opsForValue().get(getKey(userId));
+    }
+
+    // 리프래시 토큰 비교
+    public boolean matches(Long userId, String refreshToken) {
+        String savedRefreshToken = getRefreshToken(userId);
+        return refreshToken.equals(savedRefreshToken);
     }
 
     public void deleteRefreshToken(Long userId) {
