@@ -28,6 +28,10 @@ public enum ErrorCode {
     // City
     CITY_NOT_FOUND(HttpStatus.NOT_FOUND, "CITY_001", "존재하지 않는 도시입니다."),
 
+    // Favorite
+    FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "FAVORITE_001", "이미 즐겨찾기에 추가된 장소입니다."),
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "FAVORITE_002", "즐겨찾기에 추가되지 않은 장소입니다."),
+
     // Place
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "PLACE_001", "존재하지 않는 장소입니다."),
 
@@ -35,7 +39,10 @@ public enum ErrorCode {
     COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_001", "존재하지 않는 코스입니다."),
 
     // Review
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_001", "존재하지 않는 리뷰입니다.");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_001", "존재하지 않는 리뷰입니다."),
+    REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW_002", "리뷰에 대한 권한이 없습니다."),
+    REVIEW_ALREADY_LIKED(HttpStatus.CONFLICT, "REVIEW_003", "이미 좋아요한 리뷰입니다."),
+    REVIEW_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_004", "좋아요하지 않은 리뷰입니다.");
 
     private final HttpStatus status;
     private final String code;

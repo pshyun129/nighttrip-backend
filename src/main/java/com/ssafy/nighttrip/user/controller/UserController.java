@@ -1,6 +1,8 @@
 package com.ssafy.nighttrip.user.controller;
 
 import com.ssafy.nighttrip.global.response.ApiResponse;
+import com.ssafy.nighttrip.global.response.PageResponse;
+import com.ssafy.nighttrip.place.dto.PlaceListResponse;
 import com.ssafy.nighttrip.user.dto.DeleteMyInfoRequest;
 import com.ssafy.nighttrip.user.dto.MyInfoResponse;
 import com.ssafy.nighttrip.user.dto.UpdateMyInfoRequest;
@@ -112,6 +114,28 @@ public class UserController {
                         "비밀번호가 변경되었습니다",
                         request
 
+                ));
+    }
+
+    // 내 장소 즐겨찾기 조회
+    @GetMapping("/me/favorite")
+    public ResponseEntity<ApiResponse<PageResponse<PlaceListResponse>>> getMyFavorites(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        PageResponse<PlaceListResponse> response = userService.getMyFavorites(userId, page, size);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        HttpStatus.OK,
+                        "내 장소 즐겨찾기 목록 조회가 완료되었습니다.",
+                        response,
+                        request
                 ));
     }
 

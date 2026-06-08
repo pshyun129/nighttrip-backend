@@ -3,6 +3,10 @@ package com.ssafy.nighttrip.user.service;
 import com.ssafy.nighttrip.auth.service.RefreshTokenService;
 import com.ssafy.nighttrip.global.exception.BusinessException;
 import com.ssafy.nighttrip.global.exception.ErrorCode;
+import com.ssafy.nighttrip.global.response.PageResponse;
+import com.ssafy.nighttrip.place.dto.PlaceListResponse;
+import com.ssafy.nighttrip.place.mapper.PlaceMapper;
+
 import com.ssafy.nighttrip.user.domain.User;
 import com.ssafy.nighttrip.user.dto.DeleteMyInfoRequest;
 import com.ssafy.nighttrip.user.dto.MyInfoResponse;
@@ -14,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,6 +27,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
+    private final PlaceMapper placeMapper;
 
 
     public MyInfoResponse getMyInfo(Long userId) {
@@ -99,6 +106,38 @@ public class UserService {
 
         userMapper.updateMyPassword(userId, password);
 
+    }
+
+    // 내 장소 즐겨찾기 조회
+    public PageResponse<PlaceListResponse> getMyFavorites(Long userId, int page, int size) {
+        validatePageRequest(page, size);
+
+        User user = userMapper.findById(userId);
+
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        int offset = page * size;
+
+        long totalElements = placeMapper.countMyFavorites(userId);
+
+        List<PlaceListResponse> content = placeMapper.findMyFavorites(userId, size, offset)
+                .stream()
+                .map(PlaceListResponse::from)
+                .toList();
+
+        return PageResponse.of(content, page, size, totalElements);
+    }
+
+    private void validatePageRequest(int page, int size) {
+        if (page < 0) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        if (size < 1 || size > 50) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
     }
 
 
