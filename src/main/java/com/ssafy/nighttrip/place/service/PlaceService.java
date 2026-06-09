@@ -25,7 +25,7 @@ public class PlaceService  {
 
         validatePageRequest(page, size);
 
-        int offset = page * size;
+        int offset = page * size;   // 얼마나 건너뛸지
 
         PlaceSearchCondition condition = new PlaceSearchCondition(
                 request.categoryOrNull(),

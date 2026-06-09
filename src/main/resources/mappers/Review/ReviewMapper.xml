@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.nighttrip.review.mapper.ReviewMapper">
+
+    <insert id="insertReview"
+            parameterType="com.ssafy.nighttrip.review.domain.Review"
+            useGeneratedKeys="true"
+            keyProperty="reviewId">
+        INSERT INTO review (
+        user_id,
+        place_id,
+        content,
+        visit_date,
+        visibility,
+        status,
+        like_count
+        ) VALUES (
+        #{userId},
+        #{placeId},
+        #{content},
+        #{visitDate},
+        #{visibility},
+        'ACTIVE',
+        0
+        )
+    </insert>
+
+    <insert id="insertReviewImage">
+        INSERT INTO review_image (
+        review_id,
+        image_url,
+        sort_order
+        ) VALUES (
+        #{reviewId},
+        #{imageUrl},
+        #{sortOrder}
+        )
+    </insert>
+
+
+    <select id="findReviewDetailById" resultType="com.ssafy.nighttrip.review.dto.ReviewDetailResponse">
+        SELECT
+        r.review_id,
+        r.place_id,
+        p.name AS place_name,
+        r.user_id,
+        u.nickname,
+        r.content,
+        r.visit_date,
+        r.visibility,
+        r.like_count,
+        r.created_at,
+        r.updated_at
+        FROM review r
+        JOIN users u ON r.user_id = u.user_id
+        JOIN place p ON r.place_id = p.place_id
+        WHERE r.review_id = #{reviewId}
+        AND r.deleted_at IS NULL
+        AND r.status = 'ACTIVE'
+    </select>
+
+    <select id="findReviewImagesByReviewId" resultType="com.ssafy.nighttrip.review.dto.ReviewImageResponse">
+        SELECT
+        review_image_id,
+        image_url,
+        sort_order
+        FROM review_image
+        WHERE review_id = #{reviewId}
+        ORDER BY sort_order ASC, review_image_id ASC
+    </select>
+
+
+    <select id="findById" resultType="com.ssafy.nighttrip.review.domain.Review">
+        SELECT
+        review_id,
+        user_id,
+        place_id,
+        content,
+        visit_date,
+        visibility,
+        status,
+        like_count,
+        created_at,
+        updated_at,
+        deleted_at
+        FROM review
+        WHERE review_id = #{reviewId}
+        AND deleted_at IS NULL
+        AND status = 'ACTIVE'
+    </select>
+
+    <update id="updateReview" parameterType="com.ssafy.nighttrip.review.domain.Review">
+        UPDATE review
+        SET
+        content = #{content},
+        visit_date = #{visitDate},
+        visibility = #{visibility}
+        WHERE review_id = #{reviewId}
+        AND deleted_at IS NULL
+        AND status = 'ACTIVE'
+    </update>
+
+    <delete id="deleteReviewImages">
+        DELETE FROM review_image
+        WHERE review_id = #{reviewId}
+    </delete>
+
+    <select id="findReviewsByPlaceId" resultType="com.ssafy.nighttrip.review.dto.PlaceReviewListResponse">
+        SELECT
+        r.review_id,
+        u.nickname,
+        r.content,
+        r.like_count,
+        r.created_at,
+        image_agg.image_urls_csv
+        FROM review r
+        JOIN users u ON r.user_id = u.user_id
+        LEFT JOIN (
+        SELECT
+        review_id,
+        GROUP_CONCAT(image_url ORDER BY sort_order ASC, review_image_id ASC SEPARATOR ',') AS image_urls_csv
+        FROM review_image
+        GROUP BY review_id
+        ) image_agg ON r.review_id = image_agg.review_id
+        WHERE r.place_id = #{placeId}
+        AND r.deleted_at IS NULL
+        AND r.status = 'ACTIVE'
+        AND r.visibility = 'PUBLIC'
+        ORDER BY r.created_at DESC
+        LIMIT #{size}
+        OFFSET #{offset}
+    </select>
+
+    <select id="countReviewsByPlaceId" resultType="long">
+        SELECT COUNT(*)
+        FROM review r
+        WHERE r.place_id = #{placeId}
+        AND r.deleted_at IS NULL
+        AND r.status = 'ACTIVE'
+        AND r.visibility = 'PUBLIC'
+    </select>
+
+
+    <select id="findAllReviews" resultType="com.ssafy.nighttrip.review.dto.AllReviewListResponse">
+        SELECT
+        r.review_id,
+        p.name AS place_name,
+        u.nickname,
+        r.content,
+        r.like_count,
+        r.created_at,
+        image_agg.image_urls_csv
+        FROM review r
+        JOIN users u ON r.user_id = u.user_id
+        JOIN place p ON r.place_id = p.place_id
+        LEFT JOIN (
+        SELECT
+        review_id,
+        GROUP_CONCAT(image_url ORDER BY sort_order ASC, review_image_id ASC SEPARATOR ',') AS image_urls_csv
+        FROM review_image
+        GROUP BY review_id
+        ) image_agg ON r.review_id = image_agg.review_id
+        WHERE r.deleted_at IS NULL
+        AND r.status = 'ACTIVE'
+        AND r.visibility = 'PUBLIC'
+        AND p.deleted_at IS NULL
+        ORDER BY r.created_at DESC
+        LIMIT #{size}
+        OFFSET #{offset}
+    </select>
+
+    <select id="countAllReviews" resultType="long">
+        SELECT COUNT(*)
+        FROM review r
+        JOIN place p ON r.place_id = p.place_id
+        WHERE r.deleted_at IS NULL
+        AND r.status = 'ACTIVE'
+        AND r.visibility = 'PUBLIC'
+        AND p.deleted_at IS NULL
+    </select>
+
+
+    <delete id="deleteReview">
+        DELETE FROM review
+        WHERE review_id = #{reviewId}
+        AND deleted_at IS NULL
+        AND status = 'ACTIVE'
+    </delete>
+
+
+    <select id="existsReviewLike" resultType="int">
+        SELECT COUNT(*)
+        FROM review_like
+        WHERE user_id = #{userId}
+        AND review_id = #{reviewId}
+    </select>
+
+    <insert id="insertReviewLike">
+        INSERT INTO review_like (
+        user_id,
+        review_id
+        ) VALUES (
+        #{userId},
+        #{reviewId}
+        )
+    </insert>
+
+    <delete id="deleteReviewLike">
+        DELETE FROM review_like
+        WHERE user_id = #{userId}
+        AND review_id = #{reviewId}
+    </delete>
+
+    <update id="increaseReviewLikeCount">
+        UPDATE review
+        SET like_count = like_count + 1
+        WHERE review_id = #{reviewId}
+        AND deleted_at IS NULL
+        AND status = 'ACTIVE'
+    </update>
+
+    <update id="decreaseReviewLikeCount">
+        UPDATE review
+        SET like_count = CASE
+        WHEN like_count > 0 THEN like_count - 1
+        ELSE 0
+        END
+        WHERE review_id = #{reviewId}
+        AND deleted_at IS NULL
+        AND status = 'ACTIVE'
+    </update>
+</mapper>
