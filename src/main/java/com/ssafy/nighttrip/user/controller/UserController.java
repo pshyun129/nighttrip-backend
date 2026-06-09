@@ -3,6 +3,7 @@ package com.ssafy.nighttrip.user.controller;
 import com.ssafy.nighttrip.global.response.ApiResponse;
 import com.ssafy.nighttrip.global.response.PageResponse;
 import com.ssafy.nighttrip.place.dto.PlaceListResponse;
+import com.ssafy.nighttrip.review.dto.MyReviewListResponse;
 import com.ssafy.nighttrip.user.dto.DeleteMyInfoRequest;
 import com.ssafy.nighttrip.user.dto.MyInfoResponse;
 import com.ssafy.nighttrip.user.dto.UpdateMyInfoRequest;
@@ -29,7 +30,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<MyInfoResponse>> getMyInfo(
             Authentication authentication,
             HttpServletRequest request
-        ){
+    ){
 
         Long userId = (Long) authentication.getPrincipal();
 
@@ -40,10 +41,10 @@ public class UserController {
                 .body(ApiResponse.success(
                         HttpStatus.OK,
                         "내 정보 조회 성공",
-                         myInfoResponse,
+                        myInfoResponse,
                         request
 
-                        ));
+                ));
 
     }
 
@@ -54,7 +55,7 @@ public class UserController {
             @Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest,
             Authentication authentication,
             HttpServletRequest request
-        ){
+    ){
         Long userId = (Long) authentication.getPrincipal();
 
         userService.updateMyInfo(userId, updateMyInfoRequest);
@@ -80,7 +81,7 @@ public class UserController {
             @Valid @RequestBody DeleteMyInfoRequest deleteMyInfoRequest,
             Authentication authentication,
             HttpServletRequest request
-            ){
+    ){
         Long userId = (Long) authentication.getPrincipal();
 
         userService.deleteMyInfo(userId, deleteMyInfoRequest);
@@ -101,7 +102,7 @@ public class UserController {
             @Valid @RequestBody UpdateMyPasswordRequest updateMyPasswordRequest,
             Authentication authentication,
             HttpServletRequest request
-            ){
+    ){
 
         Long userId = (Long) authentication.getPrincipal();
 
@@ -134,6 +135,32 @@ public class UserController {
                 .body(ApiResponse.success(
                         HttpStatus.OK,
                         "내 장소 즐겨찾기 목록 조회가 완료되었습니다.",
+                        response,
+                        request
+                ));
+    }
+
+    // 내 리뷰 조회
+    @GetMapping("/me/review")
+    public ResponseEntity<ApiResponse<PageResponse<MyReviewListResponse>>> findMyReviews(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        PageResponse<MyReviewListResponse> response = userService.findMyReviews(
+                userId,
+                page,
+                size
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        HttpStatus.OK,
+                        "내 리뷰 목록 조회가 완료되었습니다.",
                         response,
                         request
                 ));

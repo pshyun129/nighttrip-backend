@@ -7,6 +7,8 @@ import com.ssafy.nighttrip.global.response.PageResponse;
 import com.ssafy.nighttrip.place.dto.PlaceListResponse;
 import com.ssafy.nighttrip.place.mapper.PlaceMapper;
 
+import com.ssafy.nighttrip.review.dto.MyReviewListResponse;
+import com.ssafy.nighttrip.review.mapper.ReviewMapper;
 import com.ssafy.nighttrip.user.domain.User;
 import com.ssafy.nighttrip.user.dto.DeleteMyInfoRequest;
 import com.ssafy.nighttrip.user.dto.MyInfoResponse;
@@ -28,6 +30,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
     private final PlaceMapper placeMapper;
+    private final ReviewMapper reviewMapper;
 
 
     public MyInfoResponse getMyInfo(Long userId) {
@@ -140,6 +143,21 @@ public class UserService {
         }
     }
 
+    // 내 리뷰 조회
+    public PageResponse<MyReviewListResponse> findMyReviews(Long userId, int page, int size) {
+        validatePageRequest(page, size);
 
+        int offset = page * size;
+
+        long totalElements = reviewMapper.countMyReviews(userId);
+
+        List<MyReviewListResponse> content = reviewMapper.findMyReviews(
+                userId,
+                size,
+                offset
+        );
+
+        return PageResponse.of(content, page, size, totalElements);
+    }
 
 }

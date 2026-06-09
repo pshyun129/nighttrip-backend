@@ -232,4 +232,44 @@
         AND deleted_at IS NULL
         AND status = 'ACTIVE'
     </update>
+
+
+    <select id="findMyReviews" resultType="com.ssafy.nighttrip.review.dto.MyReviewListResponse">
+        SELECT
+        r.review_id,
+        r.place_id,
+        p.name AS place_name,
+        r.content,
+        r.visit_date,
+        r.like_count,
+        r.created_at,
+        image_agg.image_urls_csv
+        FROM review r
+        JOIN place p ON r.place_id = p.place_id
+        LEFT JOIN (
+        SELECT
+        review_id,
+        GROUP_CONCAT(image_url ORDER BY sort_order ASC, review_image_id ASC SEPARATOR ',') AS image_urls_csv
+        FROM review_image
+        GROUP BY review_id
+        ) image_agg ON r.review_id = image_agg.review_id
+        WHERE r.user_id = #{userId}
+        AND r.deleted_at IS NULL
+        AND r.status = 'ACTIVE'
+        AND p.deleted_at IS NULL
+        ORDER BY r.created_at DESC
+        LIMIT #{size}
+        OFFSET #{offset}
+    </select>
+
+
+    <select id="countMyReviews" resultType="long">
+        SELECT COUNT(*)
+        FROM review r
+        JOIN place p ON r.place_id = p.place_id
+        WHERE r.user_id = #{userId}
+        AND r.deleted_at IS NULL
+        AND r.status = 'ACTIVE'
+        AND p.deleted_at IS NULL
+    </select>
 </mapper>

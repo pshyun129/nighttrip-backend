@@ -1,10 +1,7 @@
 package com.ssafy.nighttrip.review.mapper;
 
 import com.ssafy.nighttrip.review.domain.Review;
-import com.ssafy.nighttrip.review.dto.AllReviewListResponse;
-import com.ssafy.nighttrip.review.dto.PlaceReviewListResponse;
-import com.ssafy.nighttrip.review.dto.ReviewDetailResponse;
-import com.ssafy.nighttrip.review.dto.ReviewImageResponse;
+import com.ssafy.nighttrip.review.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -68,4 +65,13 @@ public interface ReviewMapper {
     int increaseReviewLikeCount(@Param("reviewId") Long reviewId);
 
     int decreaseReviewLikeCount(@Param("reviewId") Long reviewId);
+
+
+    List<MyReviewListResponse> findMyReviews(
+            @Param("userId") Long userId,
+            @Param("size") int size,
+            @Param("offset") int offset
+    );
+
+    long countMyReviews(@Param("userId") Long userId);
 }
