@@ -37,6 +37,13 @@ public enum ErrorCode {
 
     // Course
     COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_001", "존재하지 않는 코스입니다."),
+    // Course
+    COURSE_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "COURSE_002", "코스 요청 분석에 실패했습니다."),
+    COURSE_INVALID_ANALYSIS_RESULT(HttpStatus.INTERNAL_SERVER_ERROR, "COURSE_003", "코스 분석 결과 형식이 올바르지 않습니다."),
+    COURSE_CANDIDATE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_004", "추천 가능한 장소 후보가 부족합니다."),
+    MOBILITY_API_FAILED(HttpStatus.BAD_GATEWAY, "COURSE_005", "이동시간 계산에 실패했습니다."),
+    INVALID_COURSE_COUNT(HttpStatus.BAD_REQUEST, "COURSE_006", "저장할 코스는 1개 이상 3개 이하이어야 합니다."),
+    INVALID_COURSE_PLACE_COUNT(HttpStatus.BAD_REQUEST, "COURSE_007", "코스에는 최소 1개 이상의 장소가 포함되어야 합니다."),
 
     // Review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_001", "존재하지 않는 리뷰입니다."),

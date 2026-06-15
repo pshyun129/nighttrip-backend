@@ -1,9 +1,6 @@
 package com.ssafy.nighttrip.auth.service;
 
-import com.ssafy.nighttrip.auth.dto.LoginRequest;
-import com.ssafy.nighttrip.auth.dto.LoginResponse;
-import com.ssafy.nighttrip.auth.dto.LoginResult;
-import com.ssafy.nighttrip.auth.dto.RefreshResponse;
+import com.ssafy.nighttrip.auth.dto.*;
 import com.ssafy.nighttrip.global.exception.BusinessException;
 import com.ssafy.nighttrip.global.exception.ErrorCode;
 import com.ssafy.nighttrip.global.security.jwt.JwtTokenProvider;
@@ -55,10 +52,17 @@ public class AuthService {
                 jwtTokenProvider.getRefreshTokenExpirationMillis()
         );
 
+//        LoginResponse response = new LoginResponse(
+//                accessToken,
+//                "Bearer",
+//                jwtTokenProvider.getAccessTokenExpirationMillis()
+//        );
+
         LoginResponse response = new LoginResponse(
                 accessToken,
                 "Bearer",
-                jwtTokenProvider.getAccessTokenExpirationMillis()
+                jwtTokenProvider.getAccessTokenExpirationMillis(),
+                LoginUserResponse.from(user)
         );
 
         return new LoginResult(response, refreshToken);

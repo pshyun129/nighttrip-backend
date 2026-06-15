@@ -30,5 +30,11 @@
         SELECT @@character_set_connection
     </select>
 
+    <select id="findIdByName" resultType="long">
+        SELECT city_id
+        FROM city
+        WHERE name = #{name}
+        LIMIT 1
+    </select>
 
 </mapper>

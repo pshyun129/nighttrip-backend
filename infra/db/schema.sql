@@ -183,25 +183,52 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `nighttrip`.`place_tag`
 -- -----------------------------------------------------
+-- CREATE TABLE IF NOT EXISTS `nighttrip`.`place_tag` (
+--   `place_id` BIGINT NOT NULL,
+--   `tag_id` BIGINT NOT NULL,
+--   `confidence` DOUBLE NOT NULL DEFAULT 1.0,
+--   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--   `can_use` TINYINT NOT NULL DEFAULT 1,
+--   PRIMARY KEY (`place_id`, `tag_id`),
+--   INDEX `fk_place_tag_tag` (`tag_id` ASC) VISIBLE,
+--   CONSTRAINT `fk_place_tag_place`
+--     FOREIGN KEY (`place_id`)
+--     REFERENCES `nighttrip`.`place` (`place_id`)
+--     ON DELETE CASCADE,
+--   CONSTRAINT `fk_place_tag_tag`
+--     FOREIGN KEY (`tag_id`)
+--     REFERENCES `nighttrip`.`tag` (`tag_id`)
+--     ON DELETE CASCADE)
+-- ENGINE = InnoDB
+-- DEFAULT CHARACTER SET = utf8mb4
+-- COLLATE = utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `nighttrip`.`place_tag`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `nighttrip`.`place_tag` (
-  `place_id` BIGINT NOT NULL,
-  `tag_id` BIGINT NOT NULL,
-  `confidence` DOUBLE NOT NULL DEFAULT 1.0,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `can_use` TINYINT NOT NULL DEFAULT 1,
-  PRIMARY KEY (`place_id`, `tag_id`),
-  INDEX `fk_place_tag_tag` (`tag_id` ASC) VISIBLE,
-  CONSTRAINT `fk_place_tag_place`
-    FOREIGN KEY (`place_id`)
-    REFERENCES `nighttrip`.`place` (`place_id`)
-    ON DELETE CASCADE,
-  CONSTRAINT `fk_place_tag_tag`
-    FOREIGN KEY (`tag_id`)
-    REFERENCES `nighttrip`.`tag` (`tag_id`)
-    ON DELETE CASCADE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+    `place_id` BIGINT NOT NULL,
+    `tag_id` BIGINT NOT NULL,
+    `confidence` DECIMAL(5, 4) NOT NULL DEFAULT 0.7000,
+    `base_confidence` DECIMAL(5, 4) NULL DEFAULT NULL,
+    `positive_count` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    `negative_count` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `can_use` TINYINT NOT NULL DEFAULT 1,
+    PRIMARY KEY (`place_id`, `tag_id`),
+    INDEX `fk_place_tag_tag` (`tag_id` ASC) VISIBLE,
+    CONSTRAINT `fk_place_tag_place`
+        FOREIGN KEY (`place_id`)
+        REFERENCES `nighttrip`.`place` (`place_id`)
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_place_tag_tag`
+        FOREIGN KEY (`tag_id`)
+        REFERENCES `nighttrip`.`tag` (`tag_id`)
+        ON DELETE CASCADE
+    )
+    ENGINE = InnoDB
+    DEFAULT CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------

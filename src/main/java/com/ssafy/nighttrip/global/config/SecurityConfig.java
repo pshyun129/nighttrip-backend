@@ -51,11 +51,16 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/api/auth/login",
                                 "/api/auth/refresh",
+//                                "/api/course/**",  // 잠궈야함
                                 "/api/cities/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/place", "/api/place/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/review/**").permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/admin/review-analysis/run"
+                        ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

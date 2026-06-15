@@ -3,6 +3,7 @@ package com.ssafy.nighttrip.place.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,11 @@ public class PlaceListResponse {
     private String category;
     private String imageUrl;
     private String summary;
+
+    // 위도 경도 추가
+    private BigDecimal latitude;
+    private BigDecimal longitude;
+
     private Long likeCount;
     private List<String> tags;
 
@@ -26,6 +32,8 @@ public class PlaceListResponse {
                 row.getCategory(),
                 row.getImageUrl(),
                 row.getSummary(),
+                row.getLatitude(),
+                row.getLongitude(),
                 row.getLikeCount(),
                 parseTags(row.getTagsCsv())
         );

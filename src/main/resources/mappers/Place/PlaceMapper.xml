@@ -12,6 +12,8 @@
         p.category,
         p.image_url,
         p.description AS summary,
+        p.latitude,
+        p.longitude,
         COALESCE(fav_agg.like_count, 0) AS like_count,
         tag_agg.tags_csv
         FROM place p

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.nighttrip.course.mapper.CourseMapper">
+
+    <insert id="insertCourse"
+            parameterType="com.ssafy.nighttrip.course.domain.Course"
+            useGeneratedKeys="true"
+            keyProperty="courseId">
+        INSERT INTO course (
+        city_id,
+        user_id,
+        title,
+        description,
+        theme,
+        start_time,
+        end_time,
+        total_duration_minutes,
+        total_travel_minutes,
+        transport
+        ) VALUES (
+        #{cityId},
+        #{userId},
+        #{title},
+        #{description},
+        #{theme},
+        #{startTime},
+        #{endTime},
+        #{totalDurationMinutes},
+        #{totalTravelMinutes},
+        #{transport}
+        )
+    </insert>
+
+    <insert id="insertCoursePlace">
+        INSERT INTO course_place(
+        course_id,
+        place_id,
+        sequence,
+        travel_minutes_from_previous
+        )VALUES (
+        #{courseId},
+        #{placeId},
+        #{sequence},
+        #{travelMinutesFromPrevious}
+        )
+    </insert>
+
+</mapper>

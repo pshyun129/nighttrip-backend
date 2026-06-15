@@ -51,7 +51,7 @@ public class UserController {
 
     // 내 정보 수정
     @PatchMapping("/me")
-    public ResponseEntity<ApiResponse<Void>> updateMyInfo(
+    public ResponseEntity<ApiResponse<MyInfoResponse>> updateMyInfo(
             @Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest,
             Authentication authentication,
             HttpServletRequest request
@@ -67,11 +67,10 @@ public class UserController {
                 .body(ApiResponse.success(
                         HttpStatus.OK,
                         "닉네임 변경 성공",
+                        myInfoResponse,
                         request
 
                 ));
-
-
 
     }
 

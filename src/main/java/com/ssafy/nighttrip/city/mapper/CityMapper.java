@@ -16,4 +16,7 @@ public interface CityMapper {
 
 
     String findConnectionCharset();
+
+    // 코스
+    Long findIdByName(@Param("name") String name);
 }
