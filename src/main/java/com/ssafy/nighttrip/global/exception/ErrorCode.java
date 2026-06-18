@@ -37,7 +37,6 @@ public enum ErrorCode {
 
     // Course
     COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_001", "존재하지 않는 코스입니다."),
-    // Course
     COURSE_ANALYSIS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "COURSE_002", "코스 요청 분석에 실패했습니다."),
     COURSE_INVALID_ANALYSIS_RESULT(HttpStatus.INTERNAL_SERVER_ERROR, "COURSE_003", "코스 분석 결과 형식이 올바르지 않습니다."),
     COURSE_CANDIDATE_NOT_FOUND(HttpStatus.NOT_FOUND, "COURSE_004", "추천 가능한 장소 후보가 부족합니다."),

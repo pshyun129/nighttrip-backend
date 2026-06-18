@@ -1,7 +1,9 @@
 package com.ssafy.nighttrip.course.controller;
 
+import com.ssafy.nighttrip.course.dto.MyCourseDetailResponse;
 import com.ssafy.nighttrip.course.dto.SaveCourseRequest;
 import com.ssafy.nighttrip.course.dto.SaveCourseResponse;
+import com.ssafy.nighttrip.course.dto.UpdateCourseRequest;
 import com.ssafy.nighttrip.course.service.CourseService;
 import com.ssafy.nighttrip.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,4 +43,31 @@ public class CourseController {
                         request
                 ));
     }
+
+    @PatchMapping("/{courseId}")
+    public ResponseEntity<ApiResponse<MyCourseDetailResponse>> updateCourse(
+            @PathVariable Long courseId,
+            Authentication authentication,
+            @Valid @RequestBody UpdateCourseRequest updateCourseRequest,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        MyCourseDetailResponse response = courseService.updateCourse(
+                userId,
+                courseId,
+                updateCourseRequest
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        HttpStatus.OK,
+                        "코스가 수정되었습니다.",
+                        response,
+                        request
+                ));
+    }
+
+
 }

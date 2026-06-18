@@ -1,5 +1,7 @@
 package com.ssafy.nighttrip.user.controller;
 
+import com.ssafy.nighttrip.course.dto.MyCourseDetailResponse;
+import com.ssafy.nighttrip.course.dto.MyCourseListResponse;
 import com.ssafy.nighttrip.global.response.ApiResponse;
 import com.ssafy.nighttrip.global.response.PageResponse;
 import com.ssafy.nighttrip.place.dto.PlaceListResponse;
@@ -160,6 +162,56 @@ public class UserController {
                 .body(ApiResponse.success(
                         HttpStatus.OK,
                         "내 리뷰 목록 조회가 완료되었습니다.",
+                        response,
+                        request
+                ));
+    }
+
+    // 내 코스 목록 조회
+    @GetMapping("/me/course")
+    public ResponseEntity<ApiResponse<PageResponse<MyCourseListResponse>>> findMyCourses(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        PageResponse<MyCourseListResponse> response = userService.findMyCourses(
+                userId,
+                page,
+                size
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        HttpStatus.OK,
+                        "내 코스 목록 조회가 완료되었습니다.",
+                        response,
+                        request
+                ));
+    }
+
+    // 내 코스 상세 조회
+    @GetMapping("/me/course/{courseId}")
+    public ResponseEntity<ApiResponse<MyCourseDetailResponse>> findMyCourseDetail(
+            @PathVariable Long courseId,
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        MyCourseDetailResponse response = userService.findMyCourseDetail(
+                userId,
+                courseId
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(
+                        HttpStatus.OK,
+                        "내 코스 상세 조회가 완료되었습니다.",
                         response,
                         request
                 ));

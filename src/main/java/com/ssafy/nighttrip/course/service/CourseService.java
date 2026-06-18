@@ -2,10 +2,7 @@ package com.ssafy.nighttrip.course.service;
 
 import com.ssafy.nighttrip.city.mapper.CityMapper;
 import com.ssafy.nighttrip.course.domain.Course;
-import com.ssafy.nighttrip.course.dto.SaveCourseItemRequest;
-import com.ssafy.nighttrip.course.dto.SaveCoursePlaceRequest;
-import com.ssafy.nighttrip.course.dto.SaveCourseRequest;
-import com.ssafy.nighttrip.course.dto.SaveCourseResponse;
+import com.ssafy.nighttrip.course.dto.*;
 import com.ssafy.nighttrip.course.mapper.CourseMapper;
 import com.ssafy.nighttrip.global.exception.BusinessException;
 import com.ssafy.nighttrip.global.exception.ErrorCode;
@@ -26,7 +23,7 @@ public class CourseService {
     private final CityMapper cityMapper;
     private final PlaceMapper placeMapper;
 
-
+    // 코스 저장
     @Transactional
     public SaveCourseResponse saveCourses(Long userId, SaveCourseRequest request) {
         validateCourseCount(request.getCourses());
@@ -119,4 +116,101 @@ public class CourseService {
 
         return request.getDate() + " " + request.getCity() + " AI 추천 코스입니다. 총 " + placeCount + "개의 장소로 구성되어 있습니다.";
     }
+
+
+
+    // 코스 수정
+    @Transactional
+    public MyCourseDetailResponse updateCourse(
+            Long userId,
+            Long courseId,
+            UpdateCourseRequest request
+    ) {
+        Course course = courseMapper.findCourseByIdAndUserId(courseId, userId);
+
+        if (course == null) {
+            throw new BusinessException(ErrorCode.COURSE_NOT_FOUND);
+        }
+
+        validateUpdateCourseRequest(request);
+
+        int updatedCount = courseMapper.updateCourse(
+                courseId,
+                userId,
+                request.getCityId(),
+                request.getTitle(),
+                request.getDescription(),
+                request.getTheme(),
+                request.getStartTime(),
+                request.getEndTime(),
+                request.getTotalDurationMinutes(),
+                request.getTotalTravelMinutes(),
+                request.getTransport()
+        );
+
+        if (updatedCount == 0) {
+            throw new BusinessException(ErrorCode.COURSE_NOT_FOUND);
+        }
+
+        courseMapper.deleteCoursePlaces(courseId);
+
+        saveUpdatedCoursePlaces(courseId, request.getPlaces());
+
+        return findMyCourseDetail(userId, courseId);
+    }
+
+
+    public MyCourseDetailResponse findMyCourseDetail(Long userId, Long courseId) {
+        MyCourseDetailResponse response = courseMapper.findMyCourseDetail(userId, courseId);
+
+        if (response == null) {
+            throw new BusinessException(ErrorCode.COURSE_NOT_FOUND);
+        }
+
+        response.setPlaces(courseMapper.findMyCoursePlaces(courseId));
+
+        return response;
+    }
+
+    private void validateUpdateCourseRequest(UpdateCourseRequest request) {
+        if (request.getCityId() == null || cityMapper.existsById(request.getCityId()) == 0) {
+            throw new BusinessException(ErrorCode.CITY_NOT_FOUND);
+        }
+
+        if (request.getPlaces() == null || request.getPlaces().isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_COURSE_PLACE_COUNT);
+        }
+
+        for (UpdateCoursePlaceRequest place : request.getPlaces()) {
+            if (place.getPlaceId() == null || placeMapper.existsById(place.getPlaceId()) == 0) {
+                throw new BusinessException(ErrorCode.PLACE_NOT_FOUND);
+            }
+
+            if (place.getSequence() == null) {
+                throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            }
+        }
+    }
+
+    private void saveUpdatedCoursePlaces(Long courseId, List<UpdateCoursePlaceRequest> places) {
+        List<UpdateCoursePlaceRequest> sortedPlaces = places.stream()
+                .sorted(Comparator.comparing(UpdateCoursePlaceRequest::getSequence))
+                .toList();
+
+        for (UpdateCoursePlaceRequest place : sortedPlaces) {
+            Integer travelMinutesFromPrevious = place.getTravelMinutesFromPrevious();
+
+            if (travelMinutesFromPrevious == null) {
+                travelMinutesFromPrevious = 0;
+            }
+
+            courseMapper.insertCoursePlace(
+                    courseId,
+                    place.getPlaceId(),
+                    place.getSequence(),
+                    travelMinutesFromPrevious
+            );
+        }
+    }
+
 }

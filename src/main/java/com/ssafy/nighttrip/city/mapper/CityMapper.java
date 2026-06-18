@@ -19,4 +19,6 @@ public interface CityMapper {
 
     // 코스
     Long findIdByName(@Param("name") String name);
+
+    int existsById(@Param("cityId") Long cityId);
 }

@@ -37,4 +37,10 @@
         LIMIT 1
     </select>
 
+    <select id="existsById" resultType="int">
+        SELECT COUNT(*)
+        FROM city
+        WHERE city_id = #{cityId}
+    </select>
+
 </mapper>

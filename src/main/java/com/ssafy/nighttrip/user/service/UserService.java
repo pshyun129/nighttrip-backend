@@ -1,6 +1,9 @@
 package com.ssafy.nighttrip.user.service;
 
 import com.ssafy.nighttrip.auth.service.RefreshTokenService;
+import com.ssafy.nighttrip.course.dto.MyCourseDetailResponse;
+import com.ssafy.nighttrip.course.dto.MyCourseListResponse;
+import com.ssafy.nighttrip.course.mapper.CourseMapper;
 import com.ssafy.nighttrip.global.exception.BusinessException;
 import com.ssafy.nighttrip.global.exception.ErrorCode;
 import com.ssafy.nighttrip.global.response.PageResponse;
@@ -31,6 +34,7 @@ public class UserService {
     private final RefreshTokenService refreshTokenService;
     private final PlaceMapper placeMapper;
     private final ReviewMapper reviewMapper;
+    private final CourseMapper courseMapper;
 
 
     public MyInfoResponse getMyInfo(Long userId) {
@@ -159,5 +163,39 @@ public class UserService {
 
         return PageResponse.of(content, page, size, totalElements);
     }
+
+
+    // 내 코스 목록 조회
+    public PageResponse<MyCourseListResponse> findMyCourses(Long userId, int page, int size) {
+        validatePageRequest(page, size);
+
+        int offset = page * size;
+
+        long totalElements = courseMapper.countMyCourses(userId);
+
+        List<MyCourseListResponse> content = courseMapper.findMyCourses(
+                userId,
+                size,
+                offset
+        );
+
+        return PageResponse.of(content, page, size, totalElements);
+    }
+
+    // 내 코스 상세 조회
+    public MyCourseDetailResponse findMyCourseDetail(Long userId, Long courseId) {
+        MyCourseDetailResponse response = courseMapper.findMyCourseDetail(userId, courseId);
+
+        if (response == null) {
+            throw new BusinessException(ErrorCode.COURSE_NOT_FOUND);
+        }
+
+        response.setPlaces(courseMapper.findMyCoursePlaces(courseId));
+
+        return response;
+    }
+
+
+
 
 }

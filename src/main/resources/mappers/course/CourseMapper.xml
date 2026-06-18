@@ -48,4 +48,130 @@
         )
     </insert>
 
+
+    <select id="findMyCourses" resultType="com.ssafy.nighttrip.course.dto.MyCourseListResponse">
+        SELECT
+        c.course_id AS courseId,
+        c.city_id AS cityId,
+        city.name AS cityName,
+        c.title,
+        c.description,
+        c.theme,
+        c.total_duration_minutes AS totalDurationMinutes,
+        c.total_travel_minutes AS totalTravelMinutes,
+        c.transport,
+        COALESCE(place_agg.place_count, 0) AS placeCount,
+        c.created_at AS createdAt,
+        c.updated_at AS updatedAt
+        FROM course c
+        JOIN city city ON c.city_id = city.city_id
+        LEFT JOIN (
+        SELECT
+        course_id,
+        COUNT(*) AS place_count
+        FROM course_place
+        GROUP BY course_id
+        ) place_agg ON c.course_id = place_agg.course_id
+        WHERE c.user_id = #{userId}
+        AND c.deleted_at IS NULL
+        ORDER BY c.created_at DESC, c.course_id DESC
+        LIMIT #{size}
+        OFFSET #{offset}
+    </select>
+
+    <select id="countMyCourses" resultType="long">
+        SELECT COUNT(*)
+        FROM course c
+        WHERE c.user_id = #{userId}
+        AND c.deleted_at IS NULL
+    </select>
+
+    <select id="findMyCourseDetail" resultType="com.ssafy.nighttrip.course.dto.MyCourseDetailResponse">
+        SELECT
+        c.course_id AS courseId,
+        c.city_id AS cityId,
+        city.name AS cityName,
+        c.user_id AS userId,
+        c.title,
+        c.description,
+        c.theme,
+        c.start_time AS startTime,
+        c.end_time AS endTime,
+        c.total_duration_minutes AS totalDurationMinutes,
+        c.total_travel_minutes AS totalTravelMinutes,
+        c.transport,
+        c.created_at AS createdAt,
+        c.updated_at AS updatedAt,
+        c.deleted_at AS deletedAt
+        FROM course c
+        JOIN city city ON c.city_id = city.city_id
+        WHERE c.course_id = #{courseId}
+        AND c.user_id = #{userId}
+        AND c.deleted_at IS NULL
+    </select>
+
+    <select id="findMyCoursePlaces" resultType="com.ssafy.nighttrip.course.dto.MyCoursePlaceResponse">
+        SELECT
+        cp.course_place_id AS coursePlaceId,
+        cp.course_id AS courseId,
+        cp.place_id AS placeId,
+        cp.sequence,
+        cp.travel_minutes_from_previous AS travelMinutesFromPrevious,
+        cp.created_at AS createdAt,
+        cp.updated_at AS updatedAt,
+        p.name AS placeName,
+        p.latitude,
+        p.longitude
+        FROM course_place cp
+        JOIN place p ON cp.place_id = p.place_id
+        WHERE cp.course_id = #{courseId}
+        AND p.deleted_at IS NULL
+        ORDER BY cp.sequence ASC, cp.course_place_id ASC
+    </select>
+
+
+    <select id="findCourseByIdAndUserId" resultType="com.ssafy.nighttrip.course.domain.Course">
+        SELECT
+        course_id AS courseId,
+        city_id AS cityId,
+        user_id AS userId,
+        title,
+        description,
+        theme,
+        start_time AS startTime,
+        end_time AS endTime,
+        total_duration_minutes AS totalDurationMinutes,
+        total_travel_minutes AS totalTravelMinutes,
+        transport,
+        created_at AS createdAt,
+        updated_at AS updatedAt,
+        deleted_at AS deletedAt
+        FROM course
+        WHERE course_id = #{courseId}
+        AND user_id = #{userId}
+        AND deleted_at IS NULL
+    </select>
+
+    <update id="updateCourse">
+        UPDATE course
+        SET
+        city_id = #{cityId},
+        title = #{title},
+        description = #{description},
+        theme = #{theme},
+        start_time = #{startTime},
+        end_time = #{endTime},
+        total_duration_minutes = #{totalDurationMinutes},
+        total_travel_minutes = #{totalTravelMinutes},
+        transport = #{transport}
+        WHERE course_id = #{courseId}
+        AND user_id = #{userId}
+        AND deleted_at IS NULL
+    </update>
+
+    <delete id="deleteCoursePlaces">
+        DELETE FROM course_place
+        WHERE course_id = #{courseId}
+    </delete>
+
 </mapper>
