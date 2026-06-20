@@ -20,6 +20,7 @@ public enum ErrorCode {
     USER_INACTIVE(HttpStatus.FORBIDDEN, "AUTH_007", "활성화되지 않은 사용자입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_008", "Refresh Token이 존재하지 않습니다."),
     REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH_009", "Refresh Token이 일치하지 않습니다."),
+    // TODO 이메일 중복, 닉네임 중복
 
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "존재하지 않는 사용자입니다."),
@@ -48,7 +49,11 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_001", "존재하지 않는 리뷰입니다."),
     REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW_002", "리뷰에 대한 권한이 없습니다."),
     REVIEW_ALREADY_LIKED(HttpStatus.CONFLICT, "REVIEW_003", "이미 좋아요한 리뷰입니다."),
-    REVIEW_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_004", "좋아요하지 않은 리뷰입니다.");
+    REVIEW_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW_004", "좋아요하지 않은 리뷰입니다."),
+
+    INVALID_IMAGE_OWNER(HttpStatus.BAD_REQUEST, "IMAGE_001", "유효하지 않은 프로필 이미지입니다."),
+    INVALID_IMAGE_SIGNATURE(HttpStatus.BAD_REQUEST, "IMAGE_002", "이미지 업로드 검증에 실패했습니다.");
+
 
     private final HttpStatus status;
     private final String code;

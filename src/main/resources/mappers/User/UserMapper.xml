@@ -12,6 +12,7 @@
         password,
         nickname,
         profile_image_url,
+        profile_image_public_id,
         role,
         status,
         provider,
@@ -30,6 +31,7 @@
         password,
         nickname,
         profile_image_url,
+        profile_image_public_id,
         role,
         status,
         provider,
@@ -67,6 +69,25 @@
             password = #{password}
         WHERE user_id = #{userId}
 
+    </update>
+
+
+    <update id="updateProfileImage">
+        UPDATE users
+        SET
+        profile_image_url = #{profileImageUrl},
+        profile_image_public_id = #{profileImagePublicId},
+        updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="deleteProfileImage">
+        UPDATE users
+        SET
+        profile_image_url = NULL,
+        profile_image_public_id = NULL,
+        updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
     </update>
 
 </mapper>

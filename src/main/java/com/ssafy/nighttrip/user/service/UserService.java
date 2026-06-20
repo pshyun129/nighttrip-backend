@@ -13,10 +13,7 @@ import com.ssafy.nighttrip.place.mapper.PlaceMapper;
 import com.ssafy.nighttrip.review.dto.MyReviewListResponse;
 import com.ssafy.nighttrip.review.mapper.ReviewMapper;
 import com.ssafy.nighttrip.user.domain.User;
-import com.ssafy.nighttrip.user.dto.DeleteMyInfoRequest;
-import com.ssafy.nighttrip.user.dto.MyInfoResponse;
-import com.ssafy.nighttrip.user.dto.UpdateMyInfoRequest;
-import com.ssafy.nighttrip.user.dto.UpdateMyPasswordRequest;
+import com.ssafy.nighttrip.user.dto.*;
 import com.ssafy.nighttrip.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +32,7 @@ public class UserService {
     private final PlaceMapper placeMapper;
     private final ReviewMapper reviewMapper;
     private final CourseMapper courseMapper;
+    private final CloudinarySignatureService cloudinarySignatureService;
 
 
     public MyInfoResponse getMyInfo(Long userId) {
@@ -196,6 +194,72 @@ public class UserService {
     }
 
 
+    // 서명값 생성
+    @Transactional(readOnly = true)
+    public ProfileImageSignatureResponse generateProfileImageSignature(Long userId) {
+        User user = userMapper.findById(userId);
 
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return cloudinarySignatureService.generateProfileImageSignature(userId);
+    }
+
+    // 이미지 수정
+    @Transactional
+    public MyInfoResponse updateProfileImage(Long userId, UpdateProfileImageRequest request) {
+        User user = userMapper.findById(userId);
+
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (!cloudinarySignatureService.isOwnedProfileImage(userId, request.publicId())) {
+            throw new BusinessException(ErrorCode.INVALID_IMAGE_OWNER);
+        }
+
+        if (!cloudinarySignatureService.isValidUploadResponseSignature(
+                request.publicId(),
+                request.version(),
+                request.signature()
+        )) {
+            throw new BusinessException(ErrorCode.INVALID_IMAGE_SIGNATURE);
+        }
+
+        String oldPublicId = user.getProfileImagePublicId();
+
+        userMapper.updateProfileImage(
+                userId,
+                request.imageUrl(),
+                request.publicId()
+        );
+
+        cloudinarySignatureService.deleteImage(oldPublicId);
+
+        User updatedUser = userMapper.findById(userId);
+
+        return MyInfoResponse.from(updatedUser);
+    }
+
+    // 이미지 삭제
+    @Transactional
+    public MyInfoResponse deleteProfileImage(Long userId) {
+        User user = userMapper.findById(userId);
+
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        String oldPublicId = user.getProfileImagePublicId();
+
+        userMapper.deleteProfileImage(userId);
+
+        cloudinarySignatureService.deleteImage(oldPublicId);
+
+        User updatedUser = userMapper.findById(userId);
+
+        return MyInfoResponse.from(updatedUser);
+    }
 
 }

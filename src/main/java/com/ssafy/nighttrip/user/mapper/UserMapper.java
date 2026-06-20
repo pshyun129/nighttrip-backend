@@ -25,6 +25,16 @@ public interface UserMapper {
             @Param("password") String password
     );
 
+    void updateProfileImage(
+            @Param("userId") Long userId,
+            @Param("profileImageUrl") String profileImageUrl,
+            @Param("profileImagePublicId") String profileImagePublicId
+    );
+
+    void deleteProfileImage(@Param("userId") Long userId);
+
+
+    // TODO 이메일 중복(int), 닉네임 중복(int), insert
 
 
 }

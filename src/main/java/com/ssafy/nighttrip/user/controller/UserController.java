@@ -6,10 +6,7 @@ import com.ssafy.nighttrip.global.response.ApiResponse;
 import com.ssafy.nighttrip.global.response.PageResponse;
 import com.ssafy.nighttrip.place.dto.PlaceListResponse;
 import com.ssafy.nighttrip.review.dto.MyReviewListResponse;
-import com.ssafy.nighttrip.user.dto.DeleteMyInfoRequest;
-import com.ssafy.nighttrip.user.dto.MyInfoResponse;
-import com.ssafy.nighttrip.user.dto.UpdateMyInfoRequest;
-import com.ssafy.nighttrip.user.dto.UpdateMyPasswordRequest;
+import com.ssafy.nighttrip.user.dto.*;
 import com.ssafy.nighttrip.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -215,6 +212,71 @@ public class UserController {
                         response,
                         request
                 ));
+    }
+
+    // 서명값
+    @PostMapping("/me/profileImage/signature")
+    public ResponseEntity<ApiResponse<ProfileImageSignatureResponse>> generateProfileImageSignature(
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
+        Long userId = Long.valueOf(authentication.getName());
+
+        ProfileImageSignatureResponse response =
+                userService.generateProfileImageSignature(userId);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        HttpStatus.OK,
+                        "프로필 이미지 업로드 서명 발급이 완료되었습니다.",
+                        response,
+                        request
+                )
+        );
+    }
+
+    // 프로필 이미지 업데이트
+    @PatchMapping("/me/profileImage")
+    public ResponseEntity<ApiResponse<MyInfoResponse>> updateProfileImage(
+            Authentication authentication,
+            @Valid @RequestBody UpdateProfileImageRequest updateProfileImageRequest,
+            HttpServletRequest request
+    ) {
+        Long userId = Long.valueOf(authentication.getName());
+
+        MyInfoResponse response = userService.updateProfileImage(
+                userId,
+                updateProfileImageRequest
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        HttpStatus.OK,
+                        "프로필 이미지 수정이 완료되었습니다.",
+                        response,
+                        request
+                )
+        );
+    }
+
+    // 프로필 이미지 삭제
+    @DeleteMapping("/me/profileImage")
+    public ResponseEntity<ApiResponse<MyInfoResponse>> deleteProfileImage(
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
+        Long userId = Long.valueOf(authentication.getName());
+
+        MyInfoResponse response = userService.deleteProfileImage(userId);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        HttpStatus.OK,
+                        "프로필 이미지 삭제가 완료되었습니다.",
+                        response,
+                        request
+                )
+        );
     }
 
 
