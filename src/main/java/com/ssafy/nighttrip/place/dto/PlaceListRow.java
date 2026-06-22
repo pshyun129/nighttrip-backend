@@ -20,5 +20,6 @@ public class PlaceListRow {
     private BigDecimal longitude;
 
     private Long likeCount;
+    private Boolean isFavorite;
     private String tagsCsv;
 }

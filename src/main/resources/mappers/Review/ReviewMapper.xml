@@ -109,29 +109,35 @@
     </delete>
 
     <select id="findReviewsByPlaceId" resultType="com.ssafy.nighttrip.review.dto.PlaceReviewListResponse">
+
         SELECT
-        r.review_id,
-        u.nickname,
-        r.content,
-        r.like_count,
-        r.created_at,
-        image_agg.image_urls_csv
+        r.review_id AS reviewId,
+        r.user_id AS userId,
+        u.nickname AS nickname,
+        r.content AS content,
+        (
+        SELECT COUNT(*)
+        FROM review_like rl
+        WHERE rl.review_id = r.review_id
+        ) AS likeCount,
+        CASE
+        WHEN #{currentUserId, jdbcType=BIGINT} IS NULL THEN NULL
+        WHEN EXISTS (
+        SELECT 1
+        FROM review_like my_like
+        WHERE my_like.review_id = r.review_id
+        AND my_like.user_id = #{currentUserId, jdbcType=BIGINT}
+        ) THEN TRUE
+        ELSE FALSE
+        END AS likedByMe,
+        r.created_at AS createdAt
         FROM review r
-        JOIN users u ON r.user_id = u.user_id
-        LEFT JOIN (
-        SELECT
-        review_id,
-        GROUP_CONCAT(image_url ORDER BY sort_order ASC, review_image_id ASC SEPARATOR ',') AS image_urls_csv
-        FROM review_image
-        GROUP BY review_id
-        ) image_agg ON r.review_id = image_agg.review_id
+        JOIN users u ON u.user_id = r.user_id
         WHERE r.place_id = #{placeId}
-        AND r.deleted_at IS NULL
-        AND r.status = 'ACTIVE'
         AND r.visibility = 'PUBLIC'
         ORDER BY r.created_at DESC
-        LIMIT #{size}
-        OFFSET #{offset}
+        LIMIT #{size} OFFSET #{offset}
+
     </select>
 
     <select id="countReviewsByPlaceId" resultType="long">
@@ -145,31 +151,38 @@
 
 
     <select id="findAllReviews" resultType="com.ssafy.nighttrip.review.dto.AllReviewListResponse">
+
         SELECT
-        r.review_id,
-        p.name AS place_name,
-        u.nickname,
-        r.content,
-        r.like_count,
-        r.created_at,
-        image_agg.image_urls_csv
+        r.review_id AS reviewId,
+        r.user_id AS userId,
+        u.nickname AS nickname,
+        r.content AS content,
+        r.created_at AS createdAt,
+        p.place_id AS placeId,
+        p.name AS placeName,
+        (
+        SELECT COUNT(*)
+        FROM review_like rl
+        WHERE rl.review_id = r.review_id
+        ) AS likeCount,
+        CASE
+        WHEN #{currentUserId, jdbcType=BIGINT} IS NULL THEN NULL
+        WHEN EXISTS (
+        SELECT 1
+        FROM review_like my_like
+        WHERE my_like.review_id = r.review_id
+        AND my_like.user_id = #{currentUserId, jdbcType=BIGINT}
+        )
+        THEN TRUE
+        ELSE FALSE
+        END AS likedByMe
         FROM review r
-        JOIN users u ON r.user_id = u.user_id
-        JOIN place p ON r.place_id = p.place_id
-        LEFT JOIN (
-        SELECT
-        review_id,
-        GROUP_CONCAT(image_url ORDER BY sort_order ASC, review_image_id ASC SEPARATOR ',') AS image_urls_csv
-        FROM review_image
-        GROUP BY review_id
-        ) image_agg ON r.review_id = image_agg.review_id
-        WHERE r.deleted_at IS NULL
-        AND r.status = 'ACTIVE'
-        AND r.visibility = 'PUBLIC'
-        AND p.deleted_at IS NULL
+        JOIN users u ON u.user_id = r.user_id
+        JOIN place p ON p.place_id = r.place_id
+        WHERE r.visibility = 'PUBLIC'
         ORDER BY r.created_at DESC
-        LIMIT #{size}
-        OFFSET #{offset}
+        LIMIT #{size} OFFSET #{offset}
+
     </select>
 
     <select id="countAllReviews" resultType="long">

@@ -1,6 +1,7 @@
 package com.ssafy.nighttrip.review.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,11 +15,15 @@ import java.util.List;
 public class AllReviewListResponse {
 
     private Long reviewId;
+    private Long userId;
     private String placeName;
     private String nickname;
     private String content;
     private Integer likeCount;
     private LocalDateTime createdAt;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean likedByMe;
 
     @JsonIgnore
     private String imageUrlsCsv;

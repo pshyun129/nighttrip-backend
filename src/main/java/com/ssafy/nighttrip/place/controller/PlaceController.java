@@ -25,9 +25,13 @@ public class PlaceController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<PlaceListResponse>>> findPlaces(
             @ParameterObject PlaceSearchRequest placeSearchRequest,
+            Authentication authentication,
             HttpServletRequest request
     ) {
-        PageResponse<PlaceListResponse> response = placeService.findPlaces(placeSearchRequest);
+
+        Long userId = authentication == null ? null : (Long) authentication.getPrincipal();
+
+        PageResponse<PlaceListResponse> response = placeService.findPlaces(placeSearchRequest, userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

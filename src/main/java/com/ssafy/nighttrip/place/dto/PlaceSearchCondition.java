@@ -11,4 +11,5 @@ public class PlaceSearchCondition {
     private String keyword;
     private int size;
     private int offset;
+    private Long currentUserId;
 }

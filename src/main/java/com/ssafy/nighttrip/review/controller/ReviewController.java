@@ -25,12 +25,17 @@ public class ReviewController {
             @PathVariable Long placeId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            Authentication authentication,
             HttpServletRequest request
     ) {
+
+        Long userId = authentication == null ? null : (Long)authentication.getPrincipal();
+
         PageResponse<PlaceReviewListResponse> response = reviewService.findReviewsByPlaceId(
                 placeId,
                 page,
-                size
+                size,
+                userId
         );
 
         return ResponseEntity
@@ -48,9 +53,13 @@ public class ReviewController {
     public ResponseEntity<ApiResponse<PageResponse<AllReviewListResponse>>> findAllReviews(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            Authentication authentication,
             HttpServletRequest request
     ) {
-        PageResponse<AllReviewListResponse> response = reviewService.findAllReviews(page, size);
+
+        Long userId = authentication == null ? null : (Long)authentication.getPrincipal();
+
+        PageResponse<AllReviewListResponse> response = reviewService.findAllReviews(page, size, userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

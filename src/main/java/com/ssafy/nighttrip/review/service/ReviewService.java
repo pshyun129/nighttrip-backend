@@ -107,7 +107,7 @@ public class  ReviewService {
     }
 
     // 장소별 리뷰 목록
-    public PageResponse<PlaceReviewListResponse> findReviewsByPlaceId(Long placeId, int page, int size) {
+    public PageResponse<PlaceReviewListResponse> findReviewsByPlaceId(Long placeId, int page, int size, Long currentUserId) {
         validatePageRequest(page, size);
 
         if (placeMapper.existsById(placeId) == 0) {
@@ -121,7 +121,8 @@ public class  ReviewService {
         List<PlaceReviewListResponse> content = reviewMapper.findReviewsByPlaceId(
                 placeId,
                 size,
-                offset
+                offset,
+                currentUserId
         );
 
         return PageResponse.of(content, page, size, totalElements);
@@ -139,14 +140,14 @@ public class  ReviewService {
     }
 
     // 전체 리뷰 조회
-    public PageResponse<AllReviewListResponse> findAllReviews(int page, int size) {
+    public PageResponse<AllReviewListResponse> findAllReviews(int page, int size, Long currentUserId) {
         validatePageRequest(page, size);
 
         int offset = page * size;
 
         long totalElements = reviewMapper.countAllReviews();
 
-        List<AllReviewListResponse> content = reviewMapper.findAllReviews(size, offset);
+        List<AllReviewListResponse> content = reviewMapper.findAllReviews(currentUserId, size, offset);
 
         return PageResponse.of(content, page, size, totalElements);
     }

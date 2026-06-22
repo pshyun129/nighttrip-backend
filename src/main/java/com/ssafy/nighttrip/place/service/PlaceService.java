@@ -18,7 +18,7 @@ public class PlaceService  {
     private final PlaceMapper placeMapper;
 
     // 필터링 기반 검색
-    public PageResponse<PlaceListResponse> findPlaces(PlaceSearchRequest request) {
+    public PageResponse<PlaceListResponse> findPlaces(PlaceSearchRequest request, Long currentUserId) {
         int page = request.pageOrDefault();
         int size = request.sizeOrDefault();
 
@@ -31,7 +31,8 @@ public class PlaceService  {
                 request.categoryOrNull(),
                 request.keywordOrNull(),
                 size,
-                offset
+                offset,
+                currentUserId
         );
 
         long totalElements = placeMapper.countPlaces(condition);

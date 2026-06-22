@@ -32,13 +32,15 @@ public interface ReviewMapper {
     List<PlaceReviewListResponse> findReviewsByPlaceId(
             @Param("placeId") Long placeId,
             @Param("size") int size,
-            @Param("offset") int offset
+            @Param("offset") int offset,
+            @Param("currentUserId") Long currentUserId
     );
 
     long countReviewsByPlaceId(@Param("placeId") Long placeId);
 
 
     List<AllReviewListResponse> findAllReviews(
+            @Param("currentUserId") Long currentUserId,
             @Param("size") int size,
             @Param("offset") int offset
     );

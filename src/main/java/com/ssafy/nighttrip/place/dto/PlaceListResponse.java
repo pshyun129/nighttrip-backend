@@ -1,5 +1,6 @@
 package com.ssafy.nighttrip.place.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -23,6 +24,10 @@ public class PlaceListResponse {
     private BigDecimal longitude;
 
     private Long likeCount;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isFavorite;
+
     private List<String> tags;
 
     public static PlaceListResponse from(PlaceListRow row) {
@@ -35,6 +40,7 @@ public class PlaceListResponse {
                 row.getLatitude(),
                 row.getLongitude(),
                 row.getLikeCount(),
+                row.getIsFavorite(),
                 parseTags(row.getTagsCsv())
         );
     }
