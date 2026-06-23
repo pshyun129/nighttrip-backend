@@ -19,7 +19,14 @@ public enum ErrorCode {
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_006", "이메일 또는 비밀번호가 올바르지 않습니다."),
     USER_INACTIVE(HttpStatus.FORBIDDEN, "AUTH_007", "활성화되지 않은 사용자입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_008", "Refresh Token이 존재하지 않습니다."),
+
     REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AUTH_009", "Refresh Token이 일치하지 않습니다."),
+    GOOGLE_LOGIN_REQUIRED(HttpStatus.BAD_REQUEST, "AUTH_010", "구글 로그인으로 가입된 계정입니다. Google 로그인을 이용해주세요."),
+    LOCAL_ACCOUNT_ALREADY_EXISTS(HttpStatus.CONFLICT, "AUTH_011", "이미 이메일로 가입된 계정입니다. 이메일 로그인을 이용해주세요."),
+    GOOGLE_EMAIL_NOT_VERIFIED(HttpStatus.UNAUTHORIZED, "AUTH_012", "구글에서 검증된 이메일 정보를 확인할 수 없습니다."),
+    INVALID_SOCIAL_LOGIN_CODE(HttpStatus.UNAUTHORIZED, "AUTH_013", "소셜 로그인 요청이 만료되었거나 유효하지 않습니다."),
+    SOCIAL_LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_014", "구글 로그인 처리에 실패했습니다."),
+
 
 
     // User

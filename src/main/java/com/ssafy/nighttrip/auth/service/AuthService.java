@@ -19,44 +19,62 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final SocialLoginCodeService socialLoginCodeService;
 
+    // 일반 로그인
     public LoginResult login(LoginRequest request) {
         User user = userMapper.findByEmail(request.getEmail());
 
-        // 일치하는 사용자가 없으면
         if (user == null) {
             throw new BusinessException(ErrorCode.LOGIN_FAILED);
         }
 
-        // 패스워드가 일치하지 않으면
+        if (!"LOCAL".equals(user.getProvider())) {
+            throw new BusinessException(ErrorCode.GOOGLE_LOGIN_REQUIRED);
+        }
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BusinessException(ErrorCode.LOGIN_FAILED);
         }
 
-        // 활성화 되지 않은 사용자라면
-        if (!"ACTIVE".equals(user.getStatus())) {
-            throw new BusinessException(ErrorCode.USER_INACTIVE);
+
+        return issueLogin(user);
+    }
+
+    // 구글 로그인
+    public LoginResult exchangeGoogleLoginCode(String code) {
+        Long userId = socialLoginCodeService.consumeCode(code);
+
+        User user = userMapper.findById(userId);
+
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
 
-        // 토큰 생성
+        if (!"GOOGLE".equals(user.getProvider())) {
+            throw new BusinessException(ErrorCode.INVALID_SOCIAL_LOGIN_CODE);
+        }
+
+
+        return issueLogin(user);
+    }
+
+    // 로그인 이후 토큰 처리
+    private LoginResult issueLogin(User user) {
         String accessToken = jwtTokenProvider.createAccessToken(
                 user.getUserId(),
                 user.getRole()
         );
 
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUserId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(
+                user.getUserId()
+        );
 
         refreshTokenService.saveRefreshToken(
                 user.getUserId(),
                 refreshToken,
                 jwtTokenProvider.getRefreshTokenExpirationMillis()
         );
-
-//        LoginResponse response = new LoginResponse(
-//                accessToken,
-//                "Bearer",
-//                jwtTokenProvider.getAccessTokenExpirationMillis()
-//        );
 
         LoginResponse response = new LoginResponse(
                 accessToken,
@@ -67,6 +85,7 @@ public class AuthService {
 
         return new LoginResult(response, refreshToken);
     }
+
 
     // 리프레시
     public RefreshResponse refresh(String refreshToken) {

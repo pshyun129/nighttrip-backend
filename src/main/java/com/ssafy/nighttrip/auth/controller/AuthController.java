@@ -1,9 +1,6 @@
 package com.ssafy.nighttrip.auth.controller;
 
-import com.ssafy.nighttrip.auth.dto.LoginRequest;
-import com.ssafy.nighttrip.auth.dto.LoginResponse;
-import com.ssafy.nighttrip.auth.dto.LoginResult;
-import com.ssafy.nighttrip.auth.dto.RefreshResponse;
+import com.ssafy.nighttrip.auth.dto.*;
 import com.ssafy.nighttrip.auth.service.AuthService;
 import com.ssafy.nighttrip.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -102,6 +99,35 @@ public class AuthController {
                 ));
     }
 
+
+    @PostMapping("/social/exchange")
+    public ResponseEntity<ApiResponse<LoginResponse>> exchangeGoogleLogin(
+            @Valid @RequestBody SocialLoginExchangeRequest request,
+            HttpServletRequest httpServletRequest
+    ) {
+        LoginResult loginResult = authService.exchangeGoogleLoginCode(request.getCode());
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(
+                        "refreshToken",
+                        loginResult.getRefreshToken()
+                )
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/api/auth")
+                .maxAge(Duration.ofDays(7))
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(ApiResponse.success(
+                        HttpStatus.OK,
+                        "구글 로그인 성공",
+                        loginResult.getResponse(),
+                        httpServletRequest
+                ));
+    }
 
 
     // api/auth/signup

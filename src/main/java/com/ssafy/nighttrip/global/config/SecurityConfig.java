@@ -1,5 +1,7 @@
 package com.ssafy.nighttrip.global.config;
 
+import com.ssafy.nighttrip.auth.oauth.OAuth2LoginFailureHandler;
+import com.ssafy.nighttrip.auth.oauth.OAuth2LoginSuccessHandler;
 import com.ssafy.nighttrip.global.security.JwtAccessDeniedHandler;
 import com.ssafy.nighttrip.global.security.JwtAuthenticationEntryPoint;
 import com.ssafy.nighttrip.global.security.jwt.JwtAuthenticationFilter;
@@ -27,6 +29,8 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,7 +40,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
@@ -51,6 +55,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/api/auth/login",
                                 "/api/auth/refresh",
+                                "/api/auth/social/exchange",
 //                                "/api/course/**",  // 잠궈야함
                                 "/api/cities/**",
                                 "/v3/api-docs/**"
@@ -63,6 +68,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailureHandler)
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,

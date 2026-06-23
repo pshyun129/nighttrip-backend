@@ -90,4 +90,35 @@
         WHERE user_id = #{userId}
     </update>
 
+
+    <select id="countByNickname" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE nickname = #{nickname}
+        AND deleted_at IS NULL
+    </select>
+
+    <insert id="insertGoogleUser"
+            parameterType="com.ssafy.nighttrip.user.domain.User"
+            useGeneratedKeys="true"
+            keyProperty="userId"
+            keyColumn="user_id">
+        INSERT INTO users
+        (email,
+        password,
+        nickname,
+        role,
+        status,
+        provider
+        )
+        VALUES (
+        #{email},
+        NULL,
+        #{nickname},
+        #{role},
+        #{status},
+        #{provider}
+        )
+    </insert>
+
 </mapper>

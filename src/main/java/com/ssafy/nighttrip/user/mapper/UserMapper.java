@@ -33,6 +33,12 @@ public interface UserMapper {
 
     void deleteProfileImage(@Param("userId") Long userId);
 
+    // OAuth
+    int countByNickname(@Param("nickname") String nickname);
+
+    int insertGoogleUser(User user);
+
+
 
     // TODO 이메일 중복(int), 닉네임 중복(int), insert
 
