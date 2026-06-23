@@ -76,8 +76,8 @@
         </where>
     </select>
 
-    <select id="findPlaceDetailById" resultType="com.ssafy.nighttrip.place.dto.PlaceDetailRow">
-        SELECT
+   <select id="findPlaceDetailById" resultType="com.ssafy.nighttrip.place.dto.PlaceDetailRow">
+    SELECT
         p.place_id,
         p.city_id,
         c.name AS city_name,
@@ -94,38 +94,49 @@
         p.closing_time,
         COALESCE(fav_agg.like_count, 0) AS like_count,
         COALESCE(review_agg.review_count, 0) AS review_count,
+        CASE
+            WHEN #{currentUserId, jdbcType=BIGINT} IS NULL THEN NULL
+            WHEN my_favorite.place_id IS NOT NULL THEN TRUE
+            ELSE FALSE
+        END AS is_favorite,
         tag_agg.tags_csv
-        FROM place p
-        JOIN city c ON p.city_id = c.city_id
-        LEFT JOIN (
+    FROM place p
+    JOIN city c ON p.city_id = c.city_id
+    <!-- 전체 즐겨찾기 수 -->
+    LEFT JOIN (
         SELECT
-        place_id,
-        COUNT(*) AS like_count
+            place_id,
+            COUNT(*) AS like_count
         FROM place_favorite
         GROUP BY place_id
-        ) fav_agg ON p.place_id = fav_agg.place_id
-        LEFT JOIN (
+    ) fav_agg ON p.place_id = fav_agg.place_id
+    <!-- 현재 로그인 사용자의 즐겨찾기 여부 -->
+    LEFT JOIN place_favorite my_favorite
+        ON my_favorite.place_id = p.place_id
+       AND my_favorite.user_id = #{currentUserId, jdbcType=BIGINT}
+    LEFT JOIN (
         SELECT
-        place_id,
-        COUNT(*) AS review_count
+            place_id,
+            COUNT(*) AS review_count
         FROM review
         WHERE deleted_at IS NULL
-        AND status = 'ACTIVE'
+          AND status = 'ACTIVE'
         GROUP BY place_id
-        ) review_agg ON p.place_id = review_agg.place_id
-        LEFT JOIN (
+    ) review_agg ON p.place_id = review_agg.place_id
+    LEFT JOIN (
         SELECT
-        pt.place_id,
-        GROUP_CONCAT(t.name ORDER BY t.name SEPARATOR ',') AS tags_csv
+            pt.place_id,
+            GROUP_CONCAT(t.name ORDER BY t.name SEPARATOR ',') AS tags_csv
         FROM place_tag pt
         JOIN tag t ON pt.tag_id = t.tag_id
         WHERE pt.can_use = 1
-        AND t.can_use = 1
+          AND t.can_use = 1
         GROUP BY pt.place_id
-        ) tag_agg ON p.place_id = tag_agg.place_id
-        WHERE p.place_id = #{placeId}
-        AND p.deleted_at IS NULL
-    </select>
+    ) tag_agg ON p.place_id = tag_agg.place_id
+    WHERE p.place_id = #{placeId}
+      AND p.deleted_at IS NULL
+
+</select>
 
     <select id="existsById" resultType="int">
         SELECT COUNT(*)

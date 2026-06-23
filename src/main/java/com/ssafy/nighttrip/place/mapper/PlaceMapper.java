@@ -15,7 +15,11 @@ public interface PlaceMapper {
 
     long countPlaces(PlaceSearchCondition condition);
 
-    PlaceDetailRow findPlaceDetailById(@Param("placeId") Long placeId);
+    PlaceDetailRow findPlaceDetailById(
+    		@Param("placeId") Long placeId,
+    		@Param("currentUserId") Long currentUserId
+    		
+    );
 
     int existsById(@Param("placeId") Long placeId);
 

@@ -10,4 +10,5 @@ public class RefreshResponse {
     private String accessToken;
     private String tokenType;
     private long expiresIn;
+    private LoginUserResponse user;
 }

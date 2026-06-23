@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,6 +33,9 @@ public class PlaceDetailResponse {
     private String closingTime;
     private Long likeCount;
     private Long reviewCount;
+    //추가
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean isFavorite;
     private List<String> tags;
 
     public static PlaceDetailResponse from(PlaceDetailRow row) {
@@ -51,6 +56,7 @@ public class PlaceDetailResponse {
                 row.getClosingTime(),
                 row.getLikeCount(),
                 row.getReviewCount(),
+                row.getIsFavorite(),
                 parseTags(row.getTagsCsv())
         );
     }

@@ -56,8 +56,8 @@ public class PlaceService  {
     }
 
     // 장소 상세 내용
-    public PlaceDetailResponse findPlaceDetail(Long placeId) {
-        PlaceDetailRow row = placeMapper.findPlaceDetailById(placeId);
+    public PlaceDetailResponse findPlaceDetail(Long placeId, Long currentUserId) {
+        PlaceDetailRow row = placeMapper.findPlaceDetailById(placeId, currentUserId);
 
         if (row == null) {
             throw new BusinessException(ErrorCode.PLACE_NOT_FOUND);

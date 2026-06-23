@@ -47,9 +47,13 @@ public class PlaceController {
     @GetMapping("/{placeId}")
     public ResponseEntity<ApiResponse<PlaceDetailResponse>> findPlaceDetail(
             @PathVariable Long placeId,
+            Authentication authentication,
             HttpServletRequest request
     ){
-        PlaceDetailResponse response = placeService.findPlaceDetail(placeId);
+    	
+        Long userId = authentication == null ? null : (Long) authentication.getPrincipal();
+    	
+        PlaceDetailResponse response = placeService.findPlaceDetail(placeId, userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

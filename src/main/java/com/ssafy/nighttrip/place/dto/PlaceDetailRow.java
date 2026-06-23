@@ -25,5 +25,8 @@ public class PlaceDetailRow {
     private String closingTime;
     private Long likeCount;
     private Long reviewCount;
+    // 추가
+    private Boolean isFavorite;
+
     private String tagsCsv;
 }

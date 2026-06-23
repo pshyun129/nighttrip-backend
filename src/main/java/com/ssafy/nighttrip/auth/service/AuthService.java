@@ -68,6 +68,7 @@ public class AuthService {
         return new LoginResult(response, refreshToken);
     }
 
+    // 리프레시
     public RefreshResponse refresh(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
@@ -105,7 +106,8 @@ public class AuthService {
         return new RefreshResponse(
                 newAccessToken,
                 "Bearer",
-                jwtTokenProvider.getAccessTokenExpirationMillis()
+                jwtTokenProvider.getAccessTokenExpirationMillis(),
+                LoginUserResponse.from(user)
         );
     }
 
