@@ -131,6 +131,64 @@ public class AuthController {
 
 
     // api/auth/signup
-    // TODO
+    @PostMapping("/signup")
+    public ResponseEntity<ApiResponse<SignUpResponse>> register(
+            @Valid @RequestBody SignUpRequest signUpRequest,
+            HttpServletRequest request
+    ) {
+        SignUpResponse response = authService.SignUp(signUpRequest);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        HttpStatus.CREATED,
+                        "회원가입이 완료되었습니다.",
+                        response,
+                        request
+                ));
+    }
+
+
+    // 이메일 중복 체크
+    @GetMapping("/check-email")
+    public ResponseEntity<ApiResponse<EmailCheckResponse>> checkEmail(
+            @RequestParam String email,
+            HttpServletRequest request
+    ){
+
+        EmailCheckResponse response = authService.EmailCheck(email);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        HttpStatus.CREATED,
+                        "이메일 중복 검증을 성공하였습니다.",
+                        response,
+                        request
+                ));
+
+
+    }
+
+    // 이메일 중복 체크
+    @GetMapping("/check-nickname")
+    public ResponseEntity<ApiResponse<NicknameCheckResponse>> checkNickname(
+            @RequestParam String nickname,
+            HttpServletRequest request
+    ){
+
+        NicknameCheckResponse response = authService.NicknameCheck(nickname);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(
+                        HttpStatus.CREATED,
+                        "이메일 중복 검증을 성공하였습니다.",
+                        response,
+                        request
+                ));
+
+
+    }
 
 }

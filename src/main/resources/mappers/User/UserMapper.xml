@@ -121,4 +121,39 @@
         )
     </insert>
 
+
+
+    <select id="existsByEmail" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE email = #{email}
+        AND deleted_at IS NULL
+    </select>
+
+    <select id="existsByNickname" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE nickname = #{nickname}
+        AND deleted_at IS NULL
+    </select>
+
+    <insert id="insertUser"
+            parameterType="com.ssafy.nighttrip.user.domain.User"
+            useGeneratedKeys="true"
+            keyProperty="userId">
+        INSERT INTO users (email,
+        password,
+        nickname,
+        role,
+        status,
+        profile_image_url
+        ) VALUES (
+        #{email},
+        #{password},
+        #{nickname},
+        #{role},
+        #{status},
+        #{profileImageUrl}
+        )
+    </insert>
 </mapper>

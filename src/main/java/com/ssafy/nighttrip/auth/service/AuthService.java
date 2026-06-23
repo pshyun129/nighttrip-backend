@@ -138,6 +138,64 @@ public class AuthService {
     }
 
 
-    // TODO
+    // 회원가입
+    public SignUpResponse SignUp(SignUpRequest request) {
+        if (userMapper.existsByEmail(request.getEmail()) > 0) {
+            throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        if (userMapper.existsByNickname(request.getNickname()) > 0) {
+            throw new BusinessException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(encodedPassword);
+        user.setNickname(request.getNickname());
+        user.setRole("USER");
+        user.setStatus("ACTIVE");
+        user.setProfileImageUrl(null);
+
+        userMapper.insertUser(user);
+
+        return SignUpResponse.from(user);
+    }
+
+    // 이메일 중복 체크
+    public EmailCheckResponse EmailCheck(String email) {
+
+        if(email == null || email.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        EmailCheckResponse response = new EmailCheckResponse(true);
+
+        // 중복인게 있으면
+        if(userMapper.existsByEmail(email) > 0) {
+            response.setAvailable(false);
+        }
+
+        return response;
+    }
+
+    // 이메일 중복 체크
+    public NicknameCheckResponse NicknameCheck(String nickname) {
+
+        if(nickname == null || nickname.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        NicknameCheckResponse response = new NicknameCheckResponse(true);
+
+        // 중복인게 있으면
+        if(userMapper.existsByNickname(nickname) > 0) {
+            response.setAvailable(false);
+        }
+
+        return response;
+    }
+
 
 }

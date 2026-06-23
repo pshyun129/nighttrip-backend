@@ -56,6 +56,9 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/refresh",
                                 "/api/auth/social/exchange",
+                                "/api/auth/check-nickname",
+                                "/api/auth/check-email",
+                                "/api/auth/signup",
 //                                "/api/course/**",  // 잠궈야함
                                 "/api/cities/**",
                                 "/v3/api-docs/**"

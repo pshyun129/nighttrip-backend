@@ -32,6 +32,8 @@ public enum ErrorCode {
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "존재하지 않는 사용자입니다."),
     PASSWORD_NOT_MATCHED(HttpStatus.BAD_REQUEST, "USER_002", "입력하신 비밀번호와 현재 비밀번호가 일치하지 않습니다."),
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER_002", "이미 사용 중인 이메일입니다."),
+    NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "USER_003", "이미 사용 중인 닉네임입니다."),
 
     // City
     CITY_NOT_FOUND(HttpStatus.NOT_FOUND, "CITY_001", "존재하지 않는 도시입니다."),

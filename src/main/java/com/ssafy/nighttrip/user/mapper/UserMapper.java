@@ -41,6 +41,11 @@ public interface UserMapper {
 
 
     // TODO 이메일 중복(int), 닉네임 중복(int), insert
+    int existsByEmail(@Param("email") String email);
+
+    int existsByNickname(@Param("nickname") String nickname);
+
+    void insertUser(User user);
 
 
 }
